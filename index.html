@@ -133,8 +133,6 @@ function stageTwo(mapBounds) {
 	});
 	rect.on('edit', function() {
 		bounds = rect.getBounds();
-		fcStep = (bounds.getEast() - bounds.getWest()) / 50;
-		failCoord = L.latLng(bounds.getSouth() - fcStep * 2, bounds.getWest());
 	});
 	$('#form').hide();
 	$('body').css('margin',0);
