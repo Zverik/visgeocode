@@ -141,8 +141,9 @@ function stageTwo(mapBounds) {
 	map.invalidateSize();
 	map.fitBounds(bounds);
 	var btnDownload = { content: 'Скачать GeoJSON', callback: downloadGeoJSON};
+	var btnDownloadCSV = { content: 'Скачать CSV', callback: downloadCSV};
 	var btnPolygons = { content: 'Точки в контуры', callback: queryPolygons};
-	map.addControl(L.functionButtons([btnDownload, btnPolygons], { position: 'topleft' }));
+	map.addControl(L.functionButtons([btnDownload, btnDownloadCSV, btnPolygons], { position: 'topleft' }));
 	updateCounts();
 }
 
@@ -292,7 +293,44 @@ function downloadGeoJSON() {
 		}
 	});
 	var geojson = JSON.stringify({ "type": "FeatureCollection", "features": features });
-	var w = window.open().document.write(geojson);
+	window.open().document.write(geojson);
+}
+
+function downloadCSV() {
+	var f, csv = '', fields = {}, csvFields, line, coord;
+	// 1. get fields
+	map.eachLayer(function(layer) {
+		if( 'extraData' in layer ) {
+			for( f in layer.extraData )
+				if( layer.extraData.hasOwnProperty(f) )
+					fields[f] = true;
+		}
+	});
+
+	// 2. print headers
+	csvFields = ['lat', 'lon'];
+	for( f in fields )
+		if( fields.hasOwnProperty(f) )
+			csvFields.push(f);
+	csv = csvFields.join(';') + '<br>';
+
+	// 3. prepare csv
+	map.eachLayer(function(layer) {
+		if( 'extraData' in layer ) {
+			coord = 'getLatLng' in layer ? layer.getLatLng() : 'oldMarker' in layer ? layer.oldMarker.getLatLng() : 'getBounds' in layer ? layer.getBounds().getCenter() : false;
+			line = coord ? [L.Util.formatNum(coord.lat, 6), L.Util.formatNum(coord.lng, 6)] : ['', ''];
+			for( f = 2; f < csvFields.length; f++ ) {
+				if( layer.extraData.hasOwnProperty(csvFields[f]) ) {
+					str = layer.extraData[csvFields[f]];
+					if( str.indexOf(';') >= 0 || str.indexOf('"') > 0 )
+						str = '"' + str.replace(/"/, '""') + '"';
+					line.push(str);
+				}
+			}
+			csv = csv + line.join(';') + '<br>';
+		}
+	});
+	window.open().document.write(csv);
 }
 
 function queryPolygons() {
