@@ -1,3 +1,42 @@
+Инструкция на русском языке — [внизу](#Визуальное-геокодирование).
+
+# Interactive Geocoding
+
+A simple page for processing geocoding results. Can query an external service
+with osm2pgsql database for building contours. From a CSV file with addresses
+and extra attributes it can - with the help of a user - produce GeoJSON with
+building contours.
+
+## Installation
+
+Put the `findbuildings.py` script into the `cgi-bin` directory of a server with
+osm2pgsql database. In its header you should change connection parameters.
+In `html` files specify the absolute path to that script. Publish all
+`html` and `js` files somewhere.
+
+If default geocoding parameters are good, either building contours are not needed
+or your area fits tile.osmz.ru region, you can use
+[the page right here](http://zverik.github.io/visgeocode/en.html).
+
+## Usage
+
+1. Paste into the text area a CSV with addresses and a header in the first line.
+2. Change or delete the city name, and move the rectangle, so it covers all
+    addresses from the CSV.
+3. Press "Start geocoding" button and watch markers slowly appear.
+4. Markers that missed any buildings should be dragged to correct places on top of buildings.
+5. If you need contours, click "Markers to contours". Are there markers left? Check them:
+    some must be duplicates, some miss their buildings. Repeat step 4.
+6. Points can be saved to CSV, polygons - only to GeoJSON.
+7. Do not forget "© OpenStreetMap contributors".
+
+## Author and License
+
+Scripts `findbuildings.py`, `FunctionButtons.js`, `visgeocode.js` and all `html` files
+were written by ILya Zverev and published under WTFPL license. `Edit*.js` files were
+stolen (and slightly modified) from [Leaflet.draw](https://github.com/leaflet/leaflet.draw),
+library, which is MIT-licensed.
+
 # Визуальное геокодирование
 
 Простая страница для обработки результатов геокодирования. Может обращаться к внешнему
@@ -58,7 +97,7 @@
 
 ## Автор и лицензия
 
-Скрипт `findbuildings.py`, файлы `FunctionButtons.js` и `index.html` написаны Ильёй Зверевым
+Скрипт `findbuildings.py`, файлы `FunctionButtons.js`, `visgeocode.js` и все `html` написаны Ильёй Зверевым
 и опубликованы под лицензией WTFPL: делайте с ними что угодно. Файлы `Edit*.js` взяты
 (и слегка изменены) из библиотеки [Leaflet.draw](https://github.com/leaflet/leaflet.draw),
 опубликованной под лицензией MIT.
