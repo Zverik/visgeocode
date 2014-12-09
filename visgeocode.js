@@ -5,7 +5,7 @@ if( !window.visgeocode )
 		str_geojson: 'Download GeoJSON',
 		str_csv: 'Download CSV',
 		str_contours: 'Markers to contours',
-		str_numbers: 'Total: %n, found: %n|, failed: %n|, contours: %n'
+		str_numbers: 'Total: %1, found: %2|, failed: %3|, polygons: %4'
 	};
 
 var toGeocode, bounds, failCoord, fcStep,
@@ -14,9 +14,9 @@ var toGeocode, bounds, failCoord, fcStep,
 
 $(document).ready(function() {
 	var bbox = window.visgeocode.bbox || [30, 59.8, 30.6, 60.1];
-	map = L.map('map', {minZoom: 4}).setView([(+bbox[1] + (+bbox[3]))/2, (+bbox[0] + (+bbox[2]))/2], 8);
-	L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Карта &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>' }).addTo(map);
 	rect = L.rectangle([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], { stroke: false });
+	map = L.map('map', {minZoom: 4}).fitBounds(rect.getBounds());
+	L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Карта &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>' }).addTo(map);
 	map.addLayer(rect);
 	rect.editing.enable();
 	fbMoveRect = L.functionButton(window.visgeocode.str_moverect, { callback: moveRect }, { position: 'topleft' });
