@@ -86,12 +86,12 @@ function geocode() {
 
 	toGeocode = [];
 	if (csv.length > 0) {
-		fields = csv[0].split(/;/);
+		fields = parseCSVLine(csv[0]);
 		for (i = 0; i < fields.length; i++)
 			if (fields[i].toLowerCase() == 'addr' || fields[i].toLowerCase() == 'address' || fields[i].toLowerCase() == 'адрес')
 				fieldAddr = i;
 		for (i = 1; i < csv.length; i++) {
-			line = csv[i].replace(/^\s+|\s+$/g, '').split(/;/);
+			line = parseCSVLine(csv[i]);
 			if( line.length > fieldAddr && line[fieldAddr].length > 0 ) {
 				tgc = [ line[fieldAddr], {} ];
 				for( j = 0; j < line.length; j++ )
@@ -109,6 +109,28 @@ function geocode() {
 		geocodeLine(0);
 	} else
 		alert("No lines to geocode.");
+}
+
+function parseCSVLine(line) {
+	var i = 0, start = 0, i = 0, cols = [], quotes = false, qfirst = true, qlast;
+	while( i <= line.length ) {
+		if( i == line.length || (!quotes && line.charAt(i) == ';') ) {
+			cols.push(line.substring(start, qlast > 0 ? qlast : i).replace(/^\s+|\s+$/g, ''));
+			start = i + 1;
+			qfirst = true;
+			qlast = -1;
+		} else if( line.charAt(i) == '"' ) {
+			quotes = !quotes;
+			if( qfirst ) {
+				start = i + 1;
+				qfirst = false;
+				qlast = -1;
+			} else
+				qlast = i;
+		}
+		i++;
+	}
+	return cols;
 }
 
 function geocodeLine(n) {
